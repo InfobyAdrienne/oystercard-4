@@ -4,8 +4,7 @@ describe Oystercard do
   subject (:oystercard) { described_class.new }
   let (:entry_station) { double :station}
   let (:exit_station) { double :station}
-  let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
-
+  let(:journey){ { entry_station: entry_station, exit_station: exit_station } }
 
   it 'checks new card has a balance' do
     expect(oystercard.balance).to eq(0)
@@ -24,9 +23,8 @@ describe Oystercard do
   end
 
   describe '#in_journey?, #touch_in, #touch_out' do
-    it 'responds to #in_journey?' do
+    it 'is initially not in a journey' do
       expect(oystercard.in_journey).to eq false
-      # expect(oystercard).not_to be_in_journey
     end
 
     it '#touch_in is expected to change #in_journey to true' do
@@ -34,6 +32,7 @@ describe Oystercard do
       oystercard.touch_in(entry_station)
       expect(oystercard.in_journey).to eq true
     end
+    # THIS NEEDS TO BE FIXED SO THAT IN_JOURNEY IS EQUAL TO TRUE
 
     it '#touch_out is expected to change #in_journey to false' do
       oystercard.top_up(2)
@@ -48,6 +47,7 @@ describe Oystercard do
 
     it '#touch_out deducts funds from current balance' do
       oystercard.top_up(20)
+      oystercard.touch_in(entry_station)
       expect { oystercard.touch_out(exit_station) }.to change { oystercard.balance }.by(-Oystercard::MINIMUM_CHARGE)
     end
 
@@ -65,14 +65,15 @@ describe Oystercard do
     end
 
     it 'has an empty list of journeys by default' do
-      expect(oystercard.journey).to be_empty
+      expect(oystercard.journeys).to be_empty
     end
 
-    # it 'stores a journey' do
-    #   oystercard.top_up(20)
-    #   oystercard.touch_in(entry_station)
-    #   oystercard.touch_out(exit_station)
-    #   expect(oystercard.journey).to include(journey)
-    # end
+    it 'stores a journey' do
+      subject.top_up(20)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journeys).to include(journey)
+    end
+
   end
 end
